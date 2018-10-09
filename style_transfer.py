@@ -14,18 +14,21 @@ from PIL import Image
 CONTENT_WEIGHT = 5e0
 CONTENT_WEIGHT_BLEND = 1
 STYLE_WEIGHT = 5e2
-#TV_WEIGHT = 0
+#total variation denoising, make result image looks more smooth
 TV_WEIGHT = 1e2
 STYLE_LAYER_WEIGHT_EXP = 1
+#adam optimizer arguments
 LEARNING_RATE = 1e1
 BETA1 = 0.9
 BETA2 = 0.999
 EPSILON = 1e-08
+
 STYLE_SCALE = 1.0
 ITERATIONS = 1000
 VGG_PATH = 'imagenet-vgg-verydeep-19.mat'
 POOLING = 'avg'
 
+#define arguments with a argumentparser
 def build_parser():
     parser = ArgumentParser()
     parser.add_argument('--content',
@@ -45,7 +48,7 @@ def build_parser():
             dest='print_iterations', help='statistics printing frequency',
             metavar='PRINT_ITERATIONS')
     parser.add_argument('--checkpoint-output',
-            dest='checkpoint_output', help='checkpoint output format, e.g. output%%s.jpg',
+            dest='checkpoint_output', help='checkpoint output format, e.g. output%s.jpg',
             metavar='OUTPUT')
     parser.add_argument('--checkpoint-iterations', type=int,
             dest='checkpoint_iterations', help='checkpoint frequency',
@@ -61,7 +64,7 @@ def build_parser():
             dest='network', help='path to network parameters (default %(default)s)',
             metavar='VGG_PATH', default=VGG_PATH)
     parser.add_argument('--content-weight-blend', type=float,
-            dest='content_weight_blend', help='content weight blend, conv4_2 * blend + conv5_2 * (1-blend) (default %(default)s)',
+            dest='content_weight_blend', help='content weight blend, conv4_1 * blend + conv5_1 * (1-blend) (default %(default)s)',
             metavar='CONTENT_WEIGHT_BLEND', default=CONTENT_WEIGHT_BLEND)
     parser.add_argument('--content-weight', type=float,
             dest='content_weight', help='content weight (default %(default)s)',
@@ -105,6 +108,7 @@ def build_parser():
 
 
 def main():
+    #obtain arguments
     parser = build_parser()
     options = parser.parse_args()
 
@@ -114,6 +118,7 @@ def main():
     content_image = imread(options.content)
     style_images = [imread(style) for style in options.styles]
 
+    #resize input and output images
     width = options.width
     if width is not None:
         new_shape = (int(math.floor(float(content_image.shape[0]) /
@@ -177,6 +182,7 @@ def main():
     ):
         output_file = None
         combined_rgb = image
+        #save checkpoint image depended on checkpoint iterations
         if iteration is not None:
             if options.checkpoint_output:
                 output_file = options.checkpoint_output % iteration
@@ -188,12 +194,17 @@ def main():
 
 def imread(path):
     img = scipy.misc.imread(path).astype(np.float)
+# input a grayscale img 
+    # img.shape = [width, height]
     if len(img.shape) == 2:
-        # grayscale
         img = np.dstack((img,img,img))
+#input a png image
+    # img.shape = [width,height,channels]
+    #img.shape[2] = 4 r, g, b, alpha
     elif img.shape[2] == 4:
-        # PNG with alpha channel
+        # PNG with alpha channel, only save rgb channels
         img = img[:,:,:3]
+#defalut a jpg img with r, g, b channels return img.shape[2] = 3
     return img
 
 
