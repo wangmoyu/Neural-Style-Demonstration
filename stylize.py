@@ -7,7 +7,10 @@ from sys import stderr
 
 from PIL import Image
 
+#content_layers_weights set between two layers，
+#higher layer provide more abstract result
 CONTENT_LAYERS = ('relu4_1', 'relu5_1')
+
 STYLE_LAYERS = ('relu1_1', 'relu2_1', 'relu3_1', 'relu4_1', 'relu5_1')
 #STYLE_LAYERS = ('relu1_1', 'relu2_1')
 try:
@@ -29,13 +32,16 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
 
     :rtype: iterator[tuple[int|None,image]]
     """
+    #input shape: [batch, height, width, channels], batch = 1
     shape = (1,) + content.shape
     style_shapes = [(1,) + style.shape for style in styles]
     content_features = {}
     style_features = [{} for _ in styles]
 
+    #obtain weights and pixel means from vgg-19
     vgg_weights, vgg_mean_pixel = vgg.load_net(network)
 
+    #layers weight with exponent increasing
     layer_weight = 1.0
     style_layers_weights = {}
     for style_layer in STYLE_LAYERS:
@@ -67,9 +73,12 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
             style_pre = np.array([vgg.preprocess(styles[i], vgg_mean_pixel)])
             for layer in STYLE_LAYERS:
                 features = net[layer].eval(feed_dict={image: style_pre})
+                #reshape feature maps matrix, the result will be a matrix with a size of M*N
+                # M = width*height of feature map, N = number of feature maps
                 features = np.reshape(features, (-1, features.shape[3]))
                 gram = np.matmul(features.T, features) / features.size
-#               mmd = np.matmul(features, features.T) / features.size
+                #MMD method to represent style, see report for more information
+                #mmd = np.matmul(features, features.T) / features.size
                 style_features[i][layer] = gram
 
     initial_content_noise_coeff = 1.0 - initial_noiseblend
@@ -84,6 +93,7 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
             initial = initial.astype('float32')
             noise = np.random.normal(size=shape, scale=np.std(content) * 0.1)
             initial = (initial) * initial_content_noise_coeff + (tf.random_normal(shape) * 0.256) * (1.0 - initial_content_noise_coeff)
+        #the initial image is the optimized image.
         image = tf.Variable(initial)
         net = vgg.net_preloaded(vgg_weights, image, pooling)
 
@@ -110,14 +120,13 @@ def stylize(network, initial, initial_noiseblend, content, styles, preserve_colo
                 size = height * width * number
                 feats = tf.reshape(layer, (-1, number))
                 gram = tf.matmul(tf.transpose(feats), feats) / size
-#               mmd = tf.matmul(feats, tf.transpose(feats)) / size
-        
- 
+                #mmd = tf.matmul(feats, tf.transpose(feats)) / size
                 style_gram = style_features[i][style_layer]
                 style_losses.append(style_layers_weights[style_layer] * 2 * tf.nn.l2_loss(gram - style_gram) / style_gram.size)
             style_loss += style_weight * style_blend_weights[i] * reduce(tf.add, style_losses)
 
         # total variation denoising
+        # make the result image looks more smooth
         tv_y_size = _tensor_size(image[:,1:,:,:])
         tv_x_size = _tensor_size(image[:,:,1:,:])
         tv_loss = tv_weight * 2 * (
