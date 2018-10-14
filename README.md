@@ -20,8 +20,8 @@ to view all the arguments.<br>
 ![](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/interface-help.png)<br>  
 Running  `python style_transfer.py --content content image path --styles style images path --output output path` <br>
 to quickly start a style transfer process.<br>
-![](https://github.com/wangmoyu/Neural-Style-Demonstrateion/blob/master/interface.png)<br>
+![](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/interface.png)<br>
 A simple result:<br>
-https://github.com/wangmoyu/Neural-Style-Demonstrateion/blob/master/pooling%20compare/content-image.jpg <br>
-https://github.com/wangmoyu/Neural-Style-Demonstrateion/blob/master/pooling%20compare/style-image.jpg <br>
-https://github.com/wangmoyu/Neural-Style-Demonstrateion/blob/master/pooling%20compare/result.jpg <br>
+![](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/pooling%20compare/content-image.jpg) <br>
+![](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/pooling%20compare/style-image.jpg)<br>
+![](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/pooling%20compare/result.jpg)<br>
