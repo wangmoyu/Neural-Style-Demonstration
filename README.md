@@ -1,10 +1,13 @@
 # Neural-Style-Demonstration
 ## Introduction
 This is my post-graduate project in University College Cork.<br>
+<br>
 In this project, I fellow an article by [Gatys](https://arxiv.org/abs/1508.06576) to implement the neural style which is
 a method to achieve artist painting style transfer and also tried a domain transfer method to represent style.<br>
+<br>
 This project is based on Tensorflow with Python under Mac OS.
 If you are using Window Tensorflow to run this code directly, there could be a transcoding problem.<br>
+<br>
 The reference code of this project is based on [anishathalye](https://github.com/anishathalye/neural-style).<br>
 All the involved techniques have been introduced in my [project report](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/report.pdf).<br>
 ## Requirement 
