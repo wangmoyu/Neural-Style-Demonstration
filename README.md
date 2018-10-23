@@ -8,7 +8,6 @@ a method to achieve artist painting style transfer and also tried a domain trans
 This project is based on Tensorflow with Python under Mac OS.
 If you are using Window Tensorflow to run this code directly, there could be a transcoding problem.<br>
 <br>
-The reference code of this project is based on [anishathalye](https://github.com/anishathalye/neural-style).<br>
 All the involved techniques have been introduced in my [project report](https://github.com/wangmoyu/Neural-Style-Demonstration/blob/master/report.pdf).<br>
 ## Requirement 
 This implement is based on a Convolution Neural Network.<br>
